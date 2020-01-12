@@ -5,7 +5,7 @@ import SearchParams from "./SearchParams";
 const App = function appRoot() {
   return (
     <div>
-      <h1>Adoddfddddpqt Me!</h1>
+      <h1>Adopt Me!</h1>
       <SearchParams />
     </div>
   );
