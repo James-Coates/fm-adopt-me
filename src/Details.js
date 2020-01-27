@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import pet from "@frontendmasters/pet";
 import Carousel from "./Carousel";
 import ErrorBoundary from "./ErrorBoundary";
+import ThemeContext from "./ThemeContext";
+import { navigate } from "@reach/router";
+import Modal from "./Modal";
 
 class Details extends Component {
-  state = { loading: true }; // new classProperties syntax 2019/2020
+  state = { loading: true, showModal: false }; // new classProperties syntax 2019/2020
   // constructor(props) {
   //   super(props);
   //   this.state = {
@@ -21,6 +24,7 @@ class Details extends Component {
 
   setPetToState(animal) {
     var {
+      url = "/",
       name = "name",
       type = "type",
       location: { address: { city = "city", state = "state" } = {} } = {},
@@ -30,6 +34,7 @@ class Details extends Component {
     } = animal || {};
 
     this.setState({
+      url,
       name,
       animal: type,
       location: `${city}, ${state}`,
@@ -40,12 +45,28 @@ class Details extends Component {
     });
   }
 
+  toggleModal = () => {
+    this.setState({ showModal: !this.state.showModal });
+  };
+
+  adopt = () => {
+    navigate(this.state.url);
+  };
+
   render() {
     if (this.state.loading) {
       return <h1>loading...</h1>;
     }
 
-    var { animal, breed, location, description, name, media } = this.state;
+    var {
+      animal,
+      breed,
+      location,
+      description,
+      name,
+      media,
+      showModal
+    } = this.state;
 
     return (
       <div className="details">
@@ -53,8 +74,28 @@ class Details extends Component {
         <div>
           <h1>{name}</h1>
           <h2>{`${animal} - ${breed} - ${location}`}</h2>
-          <button>Adopt {name}</button>
+          <ThemeContext.Consumer>
+            {([theme]) => (
+              <button
+                style={{ backgroundColor: theme }}
+                onClick={this.toggleModal}
+              >
+                Adopt {name}
+              </button>
+            )}
+          </ThemeContext.Consumer>
           <p>{description}</p>
+          {showModal ? (
+            <Modal>
+              <div>
+                <h1>Would you like to adopt {name}</h1>
+                <div className="buttons">
+                  <button onClick={this.adopt}>Yes</button>
+                  <button onClick={this.toggleModal}>No Thanks</button>
+                </div>
+              </div>
+            </Modal>
+          ) : null}
         </div>
       </div>
     );
